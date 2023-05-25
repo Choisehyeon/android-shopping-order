@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="29dp"
             android:layout_marginBottom="33dp"
-            android:visibility="@{ (latestProduct == null) ? View.GONE : View.VISIBLE}"
+            android:visibility="@{ (latestProduct == null || latestProduct.id == product.id) ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toTopOf="@+id/cart_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

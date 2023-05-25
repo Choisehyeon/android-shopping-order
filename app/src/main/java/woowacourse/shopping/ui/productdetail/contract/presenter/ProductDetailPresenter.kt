@@ -1,24 +1,25 @@
 package woowacourse.shopping.ui.productdetail.contract.presenter
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.domain.model.CartProduct
 import com.example.domain.repository.CartRepository
+import com.example.domain.repository.ProductDetailRepository
 import com.example.domain.repository.RecentRepository
-import woowacourse.shopping.mapper.toDomain
 import woowacourse.shopping.mapper.toUIModel
 import woowacourse.shopping.model.ProductUIModel
 import woowacourse.shopping.ui.productdetail.contract.ProductDetailContract
 
 class ProductDetailPresenter(
     private val view: ProductDetailContract.View,
-    private val product: ProductUIModel,
+    private val id: Long,
+    private val productDetailRepository: ProductDetailRepository,
     private val cartRepository: CartRepository,
     private val recentRepository: RecentRepository,
 ) : ProductDetailContract.Presenter {
     private val _count: MutableLiveData<Int> = MutableLiveData(1)
     val count: LiveData<Int> get() = _count
-
     private var latestProduct: ProductUIModel? = null
 
     init {
@@ -28,26 +29,40 @@ class ProductDetailPresenter(
     }
 
     override fun setUpProductDetail() {
-        view.setProductDetail(product)
+        productDetailRepository.getById(id, onSuccess = { product ->
+            view.setProductDetail(product.toUIModel())
+        }, onFailure = { exception ->
+            Log.e("ProductDetailPresenter", exception.message.toString())
+        })
     }
 
     override fun addProductToCart() {
         count.value?.let {
-            CartProduct(product.toDomain(), it, true)
-        }?.let {
-            cartRepository.insert(it)
+            productDetailRepository.getById(id, onSuccess = { product ->
+                cartRepository.insert(CartProduct(product, it, true))
+            }, onFailure = { exception ->
+                Log.e("ProductDetailPresenter", exception.message.toString())
+            })
         }
     }
 
     override fun addProductToRecent() {
-        recentRepository.findById(product.id)?.let {
-            recentRepository.delete(it.id)
-        }
-        recentRepository.insert(product.toDomain())
+        productDetailRepository.getById(id, onSuccess = { product ->
+            recentRepository.findById(product.id)?.let {
+                recentRepository.delete(it.id)
+            }
+            recentRepository.insert(product)
+        }, onFailure = { exception ->
+            Log.e("ProductDetailPresenter", exception.message.toString())
+        })
     }
 
     override fun setProductCountDialog() {
-        view.showProductCountDialog(product)
+        productDetailRepository.getById(id, onSuccess = { product ->
+            view.showProductCountDialog(product.toUIModel())
+        }, onFailure = { exception ->
+            Log.e("ProductDetailPresenter", exception.message.toString())
+        })
     }
 
     override fun setLatestProduct() {
@@ -58,7 +73,7 @@ class ProductDetailPresenter(
     }
 
     override fun clickLatestProduct() {
-        latestProduct?.let { view.navigateToDetail(it) }
+        latestProduct?.let { view.navigateToDetail(it.id) }
     }
 
     override fun addProductCount(id: Long) {

@@ -68,12 +68,8 @@ class ShoppingPresenter(
     }
 
     override fun navigateToItemDetail(id: Long) {
-//        val latestProduct = recentRepository.getRecent(1).firstOrNull()?.toUIModel()
-//        productRepository.findById(id, onSuccess = {
-//            view.navigateToProductDetail(it.toUIModel(), latestProduct)
-//        }, onFailure = {
-//            // Handle failure case
-//        })
+        val latestProduct = recentRepository.getRecent(1).firstOrNull()?.toUIModel()
+        view.navigateToProductDetail(id, latestProduct)
     }
 
     override fun updateItemCount(id: Long, count: Int) {

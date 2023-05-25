@@ -13,10 +13,10 @@ object NetworkModule {
     private lateinit var baseUrl: String
     private var client: OkHttpClient = OkHttpClient()
 
-    val request: Request = Request.Builder()
+   /* val request: Request = Request.Builder()
         .url(baseUrl)
         .build()
-
+*/
     fun callRequest(path: String): Call {
         val request = Request.Builder().url(URL + path).build()
         return okHttpClient.newCall(request)

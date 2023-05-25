@@ -8,6 +8,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import woowacourse.shopping.R
+import woowacourse.shopping.data.datasource.remote.productdetail.ProductDetailSourceImpl
+import woowacourse.shopping.data.repository.ProductDetailRepositoryImpl
 import woowacourse.shopping.database.cart.CartDBHelper
 import woowacourse.shopping.database.cart.CartDatabase
 import woowacourse.shopping.database.recentProduct.RecentProductDatabase
@@ -39,6 +41,7 @@ class ProductDetailActivity :
         presenter = ProductDetailPresenter(
             this,
             intent.getSerializableExtraCompat(KEY_PRODUCT) ?: return keyError(KEY_PRODUCT),
+            ProductDetailRepositoryImpl(ProductDetailSourceImpl()),
             CartDatabase(CartDBHelper(this).writableDatabase),
             RecentProductDatabase(this),
         )
@@ -49,9 +52,7 @@ class ProductDetailActivity :
 
         binding.listener = this
         binding.latestProduct =
-            intent.getSerializableExtraCompat(RECENT_KEY_PRODUCT) ?: return keyError(
-                RECENT_KEY_PRODUCT,
-            )
+            intent.getSerializableExtraCompat(RECENT_KEY_PRODUCT)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -98,8 +99,8 @@ class ProductDetailActivity :
         presenter.subtractProductCount(id)
     }
 
-    override fun navigateToDetail(product: ProductUIModel) {
-        startActivity(from(this, product, null))
+    override fun navigateToDetail(id: Long) {
+        startActivity(from(this, id, null))
         finish()
     }
 
@@ -111,11 +112,11 @@ class ProductDetailActivity :
         private const val RECENT_KEY_PRODUCT = "recent_product"
         fun from(
             context: Context,
-            product: ProductUIModel,
+            id: Long,
             recentProduct: ProductUIModel? = null,
         ): Intent {
             return Intent(context, ProductDetailActivity::class.java).apply {
-                putExtra(KEY_PRODUCT, product)
+                putExtra(KEY_PRODUCT, id)
                 putExtra(RECENT_KEY_PRODUCT, recentProduct)
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             }

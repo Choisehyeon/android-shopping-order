@@ -69,7 +69,7 @@ class CartActivity : AppCompatActivity(), CartContract.View, OnCartClickListener
     }
 
     override fun navigateToItemDetail(product: ProductUIModel) {
-        startActivity(ProductDetailActivity.from(this, product))
+        startActivity(ProductDetailActivity.from(this, product.id))
     }
 
     override fun setCartItemsPrice(price: Int) {

@@ -2,6 +2,7 @@ package woowacourse.shopping.ui.shopping
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.ImageView
@@ -118,8 +119,9 @@ class ShoppingActivity :
         binding.includeShoppingSkeleton.root.visibility = View.GONE
     }
 
-    override fun navigateToProductDetail(product: ProductUIModel, latestProduct: ProductUIModel?) {
-        startActivity(ProductDetailActivity.from(this, product, latestProduct))
+    override fun navigateToProductDetail(id: Long, latestProduct: ProductUIModel?) {
+        Log.d("navigateToProductDetail", "product: id, latestProduct: $latestProduct")
+        startActivity(ProductDetailActivity.from(this, id, latestProduct))
     }
 
     override fun addProducts(data: List<ProductsItemType>) {
